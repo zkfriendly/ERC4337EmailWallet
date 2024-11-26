@@ -4,10 +4,10 @@ import fs from "fs";
 import path from "path";
 
 task("esend-eth", "Sends ETH to a specified address and sends a confirmation email to the user")
-.addParam("useremail", "The email address of the user")
-.addParam("to", "The recipient address")
-.addParam("amount", "The amount of ETH to send")
-.setAction(async (taskArgs, hre) => {
+  .addParam("useremail", "The email address of the user")
+  .addParam("to", "The recipient address")
+  .addParam("amount", "The amount of ETH to send")
+  .setAction(async (taskArgs, hre) => {
     const { generateUnsignedUserOp, getUserOpHash } = require("../scripts/utils/userOpUtils"); // lazy import to avoid circular dependency
     let { useremail, to, amount } = taskArgs;
 
@@ -34,10 +34,10 @@ task("esend-eth", "Sends ETH to a specified address and sends a confirmation ema
 
     // create a temporary email account using the deployed factory address
     const EmailAccountFactory = await hre.ethers.getContractAt("EmailAccountFactory", factoryAddress);
-    const randomAccountCode = BigInt(Math.floor(Math.random() * 10**20));
+    const randomAccountCode = BigInt(Math.floor(Math.random() * 10 ** 20));
     await EmailAccountFactory.createEmailAccount(randomAccountCode);
     const emailAccountAddress = await EmailAccountFactory.computeAddress(randomAccountCode);
-    
+
     // set balance to 100 ETH through provider
     await provider.send("hardhat_setBalance", [emailAccountAddress, hre.ethers.parseEther("100").toString()]);
 
@@ -54,10 +54,10 @@ task("esend-eth", "Sends ETH to a specified address and sends a confirmation ema
     const userOpHash = getUserOpHash(unsignedUserOperation, entryPointAddress, hre.network.config.chainId!);
     unsignedUserOperation.userOpHash = userOpHash;
     unsignedUserOperation.accountCode = randomAccountCode.toString();
-  
+
     // remove the dummy signature
     delete unsignedUserOperation.signature;
-  
+
     // Serialize user operation
     const serializedUserOp = JSON.stringify(unsignedUserOperation);
 
@@ -90,6 +90,8 @@ task("esend-eth", "Sends ETH to a specified address and sends a confirmation ema
           "Content-Type": "application/json",
         },
       });
+      const messageId = response.data.message_id;
+      console.log("Email sent with message ID: " + messageId);
       console.log("Email sent: " + JSON.stringify(response.data));
     } catch (error) {
       console.error("Error sending email: " + error);

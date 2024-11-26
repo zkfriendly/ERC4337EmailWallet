@@ -93,7 +93,7 @@ describe("EmailAccountTest", () => {
       await dkimRegistry.getAddress()
     );
     await emailAccountFactory.waitForDeployment();
-  
+
     // deploy the email account using the factory
     await emailAccountFactory.createEmailAccount(accountCommitment);
     emailAccount = await ethers.getContractAt("EmailAccount", await emailAccountFactory.computeAddress(accountCommitment));
@@ -228,10 +228,11 @@ describe("EmailAccountTest", () => {
       Number(chainId)
     );
 
+    // sign the userOp
     unsignedUserOperation.signature = await eSign({
-      userOpHashIn: userOpHash,
-      emailCommitmentIn: accountCommitment.toString(),
-      pubkeyHashIn: domainPubKeyHash.toString(),
+      hash: userOpHash,
+      senderEmail: recipientAddress,
+      senderAccountCode: accountCommitment.toString(),
     });
 
     return unsignedUserOperation;
@@ -247,7 +248,7 @@ describe("EmailAccountTest", () => {
       ["address", "uint256", "bytes"],
       [recipientAddress, amount, "0x"]
     ).slice(2);
-    
+
     const userOp = await prepareUserOp(callData);
     await sendUserOpAndWait(
       userOp,

@@ -18,13 +18,13 @@ export async function mockProver(input: any) {
 }
 
 export async function eSign(input: {
-  userOpHashIn: string;
-  emailCommitmentIn: string;
-  pubkeyHashIn: string;
+  hash: string;
+  senderEmail: string;
+  senderAccountCode: string;
 }) {
   const publicInputs = {
-    userOpHashIn: input.userOpHashIn,
-    emailCommitmentIn: input.emailCommitmentIn,
+    userOpHashIn: input.hash,
+    emailCommitmentIn: input.senderAccountCode,
     pubkeyHashIn: input.pubkeyHashIn,
   };
 
